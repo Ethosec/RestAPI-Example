@@ -42,7 +42,7 @@ app.get('/users/:id', (req, res) => {
             if(results != "")
                 res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": results}));
             else
-                res.status(200).send(JSON.stringify({"status": 204, "error": null, "response": 'No User with that ID!'}));
+                res.status(200).send(JSON.stringify({"status": 204, "error": null, "response": 'No user with that ID!'}));
           });
     }
 })
@@ -60,11 +60,11 @@ app.patch('/users/', (req, res) => {
             if(results != "")
                 argon2.verify(results[0].password, password).then(argonMatch => {
                     if(argonMatch) {
-                        res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": "Logged In"}));
+                        res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": "Logged in"}));
                     }
                     else
                     {
-                        res.status(200).send(JSON.stringify({"status": 200, "error": "Failed to log In", "response": null}));
+                        res.status(200).send(JSON.stringify({"status": 200, "error": "Failed to login", "response": null}));
                     }
                 });
             else{
@@ -87,11 +87,11 @@ app.post('/users/', (req, res) => {
         db.query("SELECT * FROM users WHERE username=? OR email=?", [username, email], (err, results) => {
             if(err) throw err;
             if(results != "")
-                res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": "User Already registered!"}));
+                res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": "User already registered!"}));
             else{
                 argon2.hash(password).then(hash => {
                     db.query("INSERT INTO `users`(`email`, `password`, `username`) VALUES (?, ?, ?)", [email, hash, username], (err, results) => {
-                        res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": "User Registered!"}));
+                        res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": "User registered!"}));
                     })
                 });
             }
