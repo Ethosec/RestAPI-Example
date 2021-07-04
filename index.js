@@ -22,9 +22,41 @@ app.get('/', (req, res) => {
     res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": "RestAPI is functional"}))
 })
 
+//#region Posts
+// Start of Posts Actions
+
+app.get('/posts', (req, res) => {
+    db.query("SELECT * FROM `posts` ORDER BY post_date DESC", (err, results) => {
+        if(err) {
+            res.status(418).send(JSON.stringify({"status": 418, "error": null, "response": "Something went wrong!"}));
+        }
+      res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": results}));
+    });
+})
+
+app.post('/posts', (req, res) => {
+    const {username, description, image} = req.body;
+
+    // INSERT INTO `posts` (`username`, `description`, `images`,  `likes`) VALUES (NULL, 'wolfie', 'This is a post', NULL, current_timestamp(), '0');
+    db.query("INSERT INTO `posts` (`username`, `description`, `images`) VALUES (?, ?, ?)", [username, description, image], (err, results) => {
+        if(err) {
+            res.status(418).send(JSON.stringify({"status": 418, "error": null, "response": "Please fill in all the fields!"}));
+        }
+        res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": "New Post Created"}))
+    })
+})
+
+// End of Posts Actions
+//#endregion
+
+//#region Users
+// Start of User Actions
+
 app.get('/users', (req, res) => {
     db.query("SELECT * FROM users", (err, results) => {
-      if(err) throw err;
+        if(err) {
+            res.status(418).send(JSON.stringify({"status": 418, "error": null, "response": "Something went wrong!"}));
+        }
       res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": results}));
     });
 })
@@ -60,11 +92,11 @@ app.patch('/users/', (req, res) => {
             if(results != "")
                 argon2.verify(results[0].password, password).then(argonMatch => {
                     if(argonMatch) {
-                        res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": "Logged In"}));
+                        res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": {id: results[0].id}}));
                     }
                     else
                     {
-                        res.status(200).send(JSON.stringify({"status": 200, "error": "Failed to log In", "response": null}));
+                        res.status(200).send(JSON.stringify({"status": 200, "error": "Failed to login", "response": null}));
                     }
                 });
             else{
@@ -98,6 +130,9 @@ app.post('/users/', (req, res) => {
         })
     }
 });
+
+// End of User Actions
+//#endregion
 
 app.listen(
     PORT,
