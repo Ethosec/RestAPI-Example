@@ -25,6 +25,24 @@ app.get('/', (req, res) => {
 //#region Posts
 // Start of Posts Actions
 
+app.get('/posts/:id', (req, res) => {
+    const {id} = req.params;
+
+    if(!id) {
+        res.status(418).send(JSON.stringify({"status": 418, "error": "We need an ID", "response": null}))
+    }
+    else
+    {
+        db.query("SELECT * FROM posts WHERE id=? ORDER BY post_date DESC", [id], (err, results) => {
+            if(err) throw err;
+            if(results != "")
+                res.status(200).send(JSON.stringify({"status": 200, "error": null, "response": results}));
+            else
+                res.status(200).send(JSON.stringify({"status": 204, "error": 'No post with that ID!', "response": null}));
+          });
+    }
+})
+
 app.get('/posts', (req, res) => {
     db.query("SELECT * FROM `posts` ORDER BY post_date DESC", (err, results) => {
         if(err) {
